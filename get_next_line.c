@@ -71,14 +71,17 @@ int	load_remainder(t_list *fd_elem, char *big_buf, int *pos, char **line)
 			fd_elem->content = (void*)ft_strdup(&rem[1]);
 		else
 			fd_elem->content = NULL;
-		free(remainder);
+		free(remainder);		
 		//ft_strleftshift(remainder, ft_strlen(remainder) + 1, ft_strlen(rem));
 		return 1;
 	}
 	*pos = ft_strlen(remainder);
 	if (*pos > 0)
+	{
 		ft_strcpy(big_buf, remainder);
-	free(remainder);
+		free(remainder);
+		fd_elem->content = NULL;
+	}
 	return 0;
 }
 
@@ -104,6 +107,8 @@ int				get_next_line(const int fd, char **line)
 
 	char *rem;
 
+	if (BUFF_SIZE <= 0 || fd < 0 || line == NULL || read(fd, big_buf, 0) < 0)
+		return (-1);
 	if (!big_buf)
 	{
 		big_buf = (char*)malloc(sizeof(char) * big_buf_size);
@@ -147,8 +152,8 @@ int				get_next_line(const int fd, char **line)
 	char			*temp;
 	char			*cont;
 */
-//	if (BUFF_SIZE <= 0 || fd < 0 || line == NULL)
+//	
 //		return (-1);
-	//if (read(fd, buf, 0) < 0)
+	//if ()
 	//	return (-1);
 //	
