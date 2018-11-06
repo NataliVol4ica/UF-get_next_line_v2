@@ -126,5 +126,6 @@ char	**ft_strsplit(char const *s, char c);
 char	*ft_strstr(const char *big, const char *small);
 char	*ft_strsub(char const *s, unsigned int start, size_t len);
 char	*ft_strtrim(char const *s);
+void	ft_strleftshift(char *str, size_t len, size_t amount);
 
 #endif

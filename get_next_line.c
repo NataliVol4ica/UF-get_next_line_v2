@@ -56,33 +56,58 @@ int str_part_contains(char *str)
 	return 0;
 }
 
+void load_remainder(char *remainder, char *big_buf, int *pos)
+{
+	*pos = ft_strlen(remainder);
+	if (*pos > 0)
+		ft_strcpy(big_buf, remainder);
+}
+
+void realloc_buf(char **buf, int *big_buf_size)
+{
+	int new_size = *big_buf_size * 4;
+	char *new_buf = (char*)malloc(sizeof(char) * new_size);
+	char *to_del = *buf;
+	ft_strncpy(new_buf, *buf, *big_buf_size);
+	*big_buf_size = new_size;
+	*buf = new_buf;
+	free(to_del);
+}
+
 int				get_next_line(const int fd, char **line)
 {
-	static char *left_ptr = NULL;
-	static char *big_buf;
-
+	static char *big_buf = NULL;
+	static char *remainder = NULL;
+	static int big_buf_size = 1000;
 	int	ret;
 	int	pos;
-	int big_buf_size;
+	char *rem;
 
-	big_buf_size = 1000 + BUFF_SIZE - 1000 % BUFF_SIZE;
-	if (!left_ptr)
+	if (!big_buf)
 	{
 		big_buf = (char*)malloc(sizeof(char) * big_buf_size);
-		left_ptr = big_buf;
+		//printf("malloc ok\n");
 	}
-	pos = left_ptr - big_buf;
-	//else
-	//	big_buf = left_ptr;
+	if ((rem = ft_strchr(remainder, '\n')))
+	{
+		//printf("remainder check positive\n");
+		rem[0] = 0;
+		*line = ft_strdup(remainder);
+		remainder = &rem[1];
+		//ft_strleftshift(remainder, ft_strlen(remainder) + 1, ft_strlen(rem));
+		return 1;
+	}
+	//printf("remainder check ok\n");
+	load_remainder(remainder, big_buf, &pos);
+	//printf("remainder load ok\n");
 	while ((ret = read(fd, &big_buf[pos], BUFF_SIZE)))
 	{
 		//printf("ret %d\n",ret);
 		if (str_part_contains(&big_buf[pos]))
 			break;
-		pos += BUFF_SIZE;
-		big_buf[pos] = 0;
-		printf("The line is \"%s\"\n", big_buf);
-		if (pos + BUFF_SIZE > big_buf_size)
+		pos += ret;
+		//printf("The line is \"%s\"\n", big_buf);
+		if (pos + BUFF_SIZE > big_buf_size - 1)
 		{
 			printf("overflow big buf\n");
 			exit(0);
@@ -90,18 +115,16 @@ int				get_next_line(const int fd, char **line)
 		}
 
 	}
-	//printf("ret %d\n",ret);
-	if (ret == 0)
+	if (pos == 0)
 		return 0;
-	*line = left_ptr;
-	left_ptr = ft_strchr(left_ptr, '\n');
-	if (!left_ptr)//esli eto last
+	big_buf[pos] = 0;
+	remainder = ft_strchr(big_buf, '\n');
+	if (remainder)
 	{
-		//printf("left ptr is null %d\n",ret);
-		return 0;
+		remainder[0] = 0;
+		remainder = &remainder[1];
 	}
-	left_ptr[0] = '\0';
-	left_ptr++;
+	*line = ft_strdup(big_buf);
 	return 1;
 }
 //	static t_list	*fd_list = NULL;

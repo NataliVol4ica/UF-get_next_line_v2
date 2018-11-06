@@ -17,6 +17,8 @@ char	*ft_strchr(const char *s, int c)
 	int		f_pos;
 	char	cc;
 
+	if (!s)
+		return (NULL);
 	cc = (char)c;
 	f_pos = 0;
 	while (s[f_pos])

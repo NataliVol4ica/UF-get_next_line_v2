@@ -42,9 +42,12 @@ int		main(int ac, char **av)
 			if (LOG)
 				printf("\n""\x1b[32m""File name = \"%s\"\n\n""\x1b[0m", av[1]);
 			while ((c = get_next_line(fd, &ans) > 0))
-				do_print(c, ans);
-			free(ans);
-			ans =NULL;
+			{
+				printf("%s\n", ans);
+				//do_print(c, ans);
+				free(ans);
+				ans =NULL;
+			}
 			printf("%d\n", c);
 		}
 		close(fd);

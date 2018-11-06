@@ -1,20 +1,28 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   get_next_line.h                                    :+:      :+:    :+:   */
+/*   ft_strleftshift.c                                  :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: nkolosov <nkolosov@student.unit.ua>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2018/11/05 20:04:33 by nkolosov          #+#    #+#             */
-/*   Updated: 2018/11/05 20:04:35 by nkolosov         ###   ########.fr       */
+/*   Created: 2018/11/06 15:34:42 by nkolosov          #+#    #+#             */
+/*   Updated: 2018/11/06 15:34:54 by nkolosov         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#ifndef GET_NEXT_LINE_H
-# define GET_NEXT_LINE_H
+#include "libft.h"
 
-# define BUFF_SIZE 5
+void	ft_strleftshift(char *str, size_t len)
+{
+	size_t i;
+	size_t stlen;
 
-int		get_next_line(const int fd, char **line);
-
-#endif
+	stlen = ft_strlen(str);
+	i = 0;
+	while (i < stlen - len)
+	{
+		str[i] = str[i + len];
+		i++;
+	}
+	str[i] = 0;
+}
