@@ -20,19 +20,11 @@
 #include "libft.h"
 #include "get_next_line.h"
 
-/*static void		do_free(t_list **readlist, char **left, t_list *fd_elem)
+static t_list	*get_list_elem(t_data *data, const int fd)
 {
-	ft_lstdel(readlist, NULL);
-	ft_memdel((void**)left);
-	ft_memdel(&fd_elem->content);
-}
-*/
-static t_list	*get_list_elem(const int fd)
-{
-	static t_list	*fd_list = NULL;
 	t_list	*t;
 
-	t = fd_list;
+	t = data->fd_list;
 	while (t)
 	{
 		if (t->content_size == (size_t)fd)
@@ -42,7 +34,7 @@ static t_list	*get_list_elem(const int fd)
 	if ((t = ft_lstnew(NULL, 0)))
 	{
 		t->content_size = (size_t)fd;
-		ft_lstpushback(&fd_list, t);
+		ft_lstpushback(&data->fd_list, t);
 		return (t);
 	}
 	return (NULL);
@@ -64,7 +56,6 @@ int	load_remainder(t_list *fd_elem, char *big_buf, int *pos, char **line)
 	remainder = (char*)fd_elem->content;
 	if ((rem = ft_strchr(remainder, '\n')))
 	{
-		//printf("remainder check positive\n");
 		rem[0] = 0;
 		*line = ft_strdup(remainder);
 		if (rem[1])
@@ -72,7 +63,6 @@ int	load_remainder(t_list *fd_elem, char *big_buf, int *pos, char **line)
 		else
 			fd_elem->content = NULL;
 		free(remainder);		
-		//ft_strleftshift(remainder, ft_strlen(remainder) + 1, ft_strlen(rem));
 		return 1;
 	}
 	*pos = ft_strlen(remainder);
@@ -96,45 +86,41 @@ void realloc_buf(char **buf, int *big_buf_size)
 	free(to_del);
 }
 
+void init_data(t_data **data)
+{
+	*data = (t_data)malloc(sizeof(t_data));
+	*data->big_buf = (char*)malloc(sizeof(char) * big_buf_size);
+	*data->big_buf_size = BUFF_SIZE + 1000;
+	*data->fd_list = NULL;
+}
+
 int				get_next_line(const int fd, char **line)
 {
-	static char *big_buf = NULL;
-	//static int big_buf_size = BUFF_SIZE + 1000;
-	static int big_buf_size = BUFF_SIZE + 1;
-	int	ret;
-	int	pos;
+	static t_data	*data;
+	int				ret;
+	int				pos;
 	t_list			*fd_elem;
-
-	char *rem;
+	char			*rem;
 
 	if (BUFF_SIZE <= 0 || fd < 0 || line == NULL || read(fd, big_buf, 0) < 0)
 		return (-1);
-	if (!big_buf)
-	{
-		big_buf = (char*)malloc(sizeof(char) * big_buf_size);
-		//printf("malloc ok\n");
-	}
-	
-	fd_elem = get_list_elem(fd);
-	//printf("remainder check ok\n");
-	if (load_remainder(fd_elem, big_buf, &pos, line))
+	if (!data)
+		init_data(&data);
+	fd_elem = get_list_elem(data, fd);
+	if (load_remainder(fd_elem, data->big_buf, &pos, line))
 		return (1);
-	//printf("remainder load ok\n");
-	while ((ret = read(fd, &big_buf[pos], BUFF_SIZE)))
+	while ((ret = read(fd, &data->big_buf[pos], BUFF_SIZE)))
 	{
-		//printf("ret %d\n",ret);
 		pos += ret;
-		//printf("L: \"%s\"\n", big_buf);
-		if (str_part_contains(big_buf, pos, ret))
+		if (str_part_contains(data->big_buf, pos, ret))
 			break;
-		if (pos + BUFF_SIZE > big_buf_size - 1)
-			realloc_buf(&big_buf, &big_buf_size);
+		if (pos + BUFF_SIZE > data->big_buf_size - 1)
+			realloc_buf(&data->big_buf, &big_buf_size);
 	}
-	//printf("met newline\n");
 	if (pos == 0)
 		return 0;
-	big_buf[pos] = 0;
-	rem = ft_strchr(big_buf, '\n');
+	data->big_buf[pos] = 0;
+	rem = ft_strchr(data->big_buf, '\n');
 	if (rem)
 	{
 		rem[0] = 0;
@@ -143,17 +129,6 @@ int				get_next_line(const int fd, char **line)
 		else
 			fd_elem->content = NULL;
 	}
-	*line = ft_strdup(big_buf);
+	*line = ft_strdup(data->big_buf);
 	return 1;
 }
-//	
-
-	/*char			*left;
-	char			*temp;
-	char			*cont;
-*/
-//	
-//		return (-1);
-	//if ()
-	//	return (-1);
-//	

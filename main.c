@@ -48,10 +48,10 @@ int		main(int ac, char **av)
 				free(ans);
 				ans =NULL;
 			}
-			printf("%d\n", c);
+			//printf("%d\n", c);
 		}
 		close(fd);
 	}
-	//system("leaks gnl");
+	//9system("leaks gnl");
 	return (0);
 }

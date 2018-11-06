@@ -12,14 +12,13 @@
 
 #include "libft.h"
 
-void	ft_strleftshift(char *str, size_t len)
+void	ft_strleftshift(char *str, size_t len, size_t amount)
 {
 	size_t i;
 	size_t stlen;
 
-	stlen = ft_strlen(str);
 	i = 0;
-	while (i < stlen - len)
+	while (i < amount)
 	{
 		str[i] = str[i + len];
 		i++;
