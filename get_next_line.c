@@ -48,10 +48,10 @@ static t_list	*get_list_elem(t_list **l, const int fd)
 }
 */
 
-int str_part_contains(char *str)
+int str_part_contains(char *str, int pos, int len)
 {
-	for (int i= 0; i < BUFF_SIZE; i++)
-		if (str[i] == '\n')
+	for (int i = 0; i < len; i++)
+		if (str[pos - i - 1] == '\n')
 			return 1;
 	return 0;
 }
@@ -78,7 +78,8 @@ int				get_next_line(const int fd, char **line)
 {
 	static char *big_buf = NULL;
 	static char *remainder = NULL;
-	static int big_buf_size = 1000;
+	//static int big_buf_size = BUFF_SIZE + 1000;
+	static int big_buf_size = BUFF_SIZE + 1;
 	int	ret;
 	int	pos;
 	char *rem;
@@ -103,18 +104,14 @@ int				get_next_line(const int fd, char **line)
 	while ((ret = read(fd, &big_buf[pos], BUFF_SIZE)))
 	{
 		//printf("ret %d\n",ret);
-		if (str_part_contains(&big_buf[pos]))
-			break;
 		pos += ret;
-		//printf("The line is \"%s\"\n", big_buf);
+		//printf("L: \"%s\"\n", big_buf);
+		if (str_part_contains(big_buf, pos, ret))
+			break;
 		if (pos + BUFF_SIZE > big_buf_size - 1)
-		{
-			printf("overflow big buf\n");
-			exit(0);
-			break;//todo:realloc
-		}
-
+			realloc_buf(&big_buf, &big_buf_size);
 	}
+	//printf("met newline\n");
 	if (pos == 0)
 		return 0;
 	big_buf[pos] = 0;
