@@ -26,10 +26,10 @@ typedef struct	s_data
 
 typedef struct	s_vars
 {
-	int				ret;
-	int				pos;
-	t_list			*fd_elem;
-	char			*rem;
+	int		ret;
+	int		pos;
+	t_list	*fd_elem;
+	char	*rem;
 }				t_vars;
 
 int				get_next_line(const int fd, char **line);
