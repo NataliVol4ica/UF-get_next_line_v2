@@ -10,6 +10,10 @@
 /*                                                                            */
 /* ************************************************************************** */
 
+//todo: '\n' into defined var
+//todo: check big fd
+//todo: check big buf size
+
 #include <stdlib.h>
 #include <unistd.h>
 #include "get_next_line.h"
