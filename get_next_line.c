@@ -17,7 +17,6 @@
 #include <stdio.h>
 #include <unistd.h>
 #include "libft.h"
-#include "libft.h"
 #include "get_next_line.h"
 
 static t_list	*get_list_elem(t_data *data, const int fd)
@@ -75,23 +74,24 @@ int	load_remainder(t_list *fd_elem, char *big_buf, int *pos, char **line)
 	return 0;
 }
 
-void realloc_buf(char **buf, int *big_buf_size)
+//void realloc_buf(char **buf, int *big_buf_size)
+void realloc_buf(t_data *data)
 {
-	int new_size = *big_buf_size * 4;
-	char *new_buf = (char*)malloc(sizeof(char) * new_size);
-	char *to_del = *buf;
-	ft_strncpy(new_buf, *buf, *big_buf_size);
-	*big_buf_size = new_size;
-	*buf = new_buf;
+	int		new_size = data->big_buf_size * 4;
+	char	*new_buf = (char*)malloc(sizeof(char) * new_size);
+	char	*to_del = data->big_buf;
+	ft_strncpy(new_buf, data->big_buf, data->big_buf_size);
+	data->big_buf_size = new_size;
+	data->big_buf = new_buf;
 	free(to_del);
 }
 
 void init_data(t_data **data)
 {
-	*data = (t_data)malloc(sizeof(t_data));
-	*data->big_buf = (char*)malloc(sizeof(char) * big_buf_size);
-	*data->big_buf_size = BUFF_SIZE + 1000;
-	*data->fd_list = NULL;
+	*data = (t_data*)malloc(sizeof(t_data));
+	(*data)->big_buf_size = BUFF_SIZE + 1000;
+	(*data)->big_buf = (char*)malloc(sizeof(char) * (*data)->big_buf_size);
+	(*data)->fd_list = NULL;
 }
 
 int				get_next_line(const int fd, char **line)
@@ -102,10 +102,10 @@ int				get_next_line(const int fd, char **line)
 	t_list			*fd_elem;
 	char			*rem;
 
-	if (BUFF_SIZE <= 0 || fd < 0 || line == NULL || read(fd, big_buf, 0) < 0)
-		return (-1);
 	if (!data)
 		init_data(&data);
+	if (BUFF_SIZE <= 0 || fd < 0 || line == NULL || read(fd, data->big_buf, 0) < 0)
+		return (-1);
 	fd_elem = get_list_elem(data, fd);
 	if (load_remainder(fd_elem, data->big_buf, &pos, line))
 		return (1);
@@ -115,7 +115,7 @@ int				get_next_line(const int fd, char **line)
 		if (str_part_contains(data->big_buf, pos, ret))
 			break;
 		if (pos + BUFF_SIZE > data->big_buf_size - 1)
-			realloc_buf(&data->big_buf, &big_buf_size);
+			realloc_buf(data);
 	}
 	if (pos == 0)
 		return 0;

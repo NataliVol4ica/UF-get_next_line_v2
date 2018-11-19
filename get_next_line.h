@@ -15,6 +15,8 @@
 
 # define BUFF_SIZE 5
 
+#include "libft.h"
+
 typedef struct	s_data
 {
 	char	*big_buf;
