@@ -1,37 +1,27 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   get_next_line.h                                    :+:      :+:    :+:   */
+/*   ft_strnchr.c                                       :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: nkolosov <nkolosov@student.unit.ua>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2018/11/05 20:04:33 by nkolosov          #+#    #+#             */
-/*   Updated: 2018/11/05 20:04:35 by nkolosov         ###   ########.fr       */
+/*   Created: 2017/10/25 16:21:34 by nkolosov          #+#    #+#             */
+/*   Updated: 2017/10/25 16:21:34 by nkolosov         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#ifndef GET_NEXT_LINE_H
-# define GET_NEXT_LINE_H
+#include <string.h>
 
-# define BUFF_SIZE 5
-
-# include "libft.h"
-
-typedef struct	s_data
+int	ft_strnchr(char *str, int pos, int len)
 {
-	char	*big_buf;
-	int		big_buf_size;
-	t_list	*fd_list;
-}				t_data;
+	int i;
 
-typedef struct	s_vars
-{
-	int				ret;
-	int				pos;
-	t_list			*fd_elem;
-	char			*rem;
-}				t_vars;
-
-int				get_next_line(const int fd, char **line);
-
-#endif
+	i = 0;
+	while (i < len)
+	{
+		if (str[pos - i - 1] == '\n')
+			return (1);
+		i++;
+	}
+	return (0);
+}

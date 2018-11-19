@@ -62,14 +62,12 @@ $(LIBFT):
 	@make -C $(LIBDIR)/
 
 clean:
-	@find $(RESOURCES)/ -name "*.o" -delete
-	@touch 1.o
-	@rm *.o
+	@find . -name "*.o" -delete
 
 fclean: clean
-	@rm $(NAMES) || true
+	@rm $(NAME) || true
 
-re: fclean full
+re: fclean all
 
 norm:
 	@clear

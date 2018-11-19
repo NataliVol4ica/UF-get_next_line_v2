@@ -103,6 +103,7 @@ void	ft_putstr(char *str);
 char	**ft_split_whitespaces(char *str);
 char	*ft_strcat(char *s1, char const *s2);
 char	*ft_strchr(const char *s, int c);
+int		ft_strnchr(char *str, int pos, int len);
 void	ft_strclr(char *s);
 int		ft_strcmp(const char *s1, const char *s2);
 char	*ft_strcpy(char *dest, char const *src);
