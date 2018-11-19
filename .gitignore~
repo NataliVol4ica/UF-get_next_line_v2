@@ -1,7 +1,6 @@
 *.o
 *.a
 gnl
-*DS_*
 
 # Prerequisites
 *.d

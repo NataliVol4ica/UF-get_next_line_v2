@@ -10,13 +10,8 @@
 /*                                                                            */
 /* ************************************************************************** */
 
-//todo: rm extra libraries
-
 #include <stdlib.h>
-#include <fcntl.h>
-#include <stdio.h>
 #include <unistd.h>
-#include "libft.h"
 #include "get_next_line.h"
 
 static t_list	*get_list_elem(t_data *data, const int fd)
@@ -39,15 +34,8 @@ static t_list	*get_list_elem(t_data *data, const int fd)
 	return (NULL);
 }
 
-int str_part_contains(char *str, int pos, int len)
-{
-	for (int i = 0; i < len; i++)
-		if (str[pos - i - 1] == '\n')
-			return 1;
-	return 0;
-}
-
-int	load_remainder(t_list *fd_elem, char *big_buf, int *pos, char **line)
+static int		load_remainder(t_list *fd_elem,
+						char *big_buf, int *pos, char **line)
 {
 	char *remainder;
 	char *rem;
@@ -61,8 +49,8 @@ int	load_remainder(t_list *fd_elem, char *big_buf, int *pos, char **line)
 			fd_elem->content = (void*)ft_strdup(&rem[1]);
 		else
 			fd_elem->content = NULL;
-		free(remainder);		
-		return 1;
+		free(remainder);
+		return (1);
 	}
 	*pos = ft_strlen(remainder);
 	if (*pos > 0)
@@ -71,64 +59,68 @@ int	load_remainder(t_list *fd_elem, char *big_buf, int *pos, char **line)
 		free(remainder);
 		fd_elem->content = NULL;
 	}
-	return 0;
+	return (0);
 }
 
-//void realloc_buf(char **buf, int *big_buf_size)
-void realloc_buf(t_data *data)
+static void		realloc_buf(t_data *data)
 {
-	int		new_size = data->big_buf_size * 4;
-	char	*new_buf = (char*)malloc(sizeof(char) * new_size);
-	char	*to_del = data->big_buf;
+	int		new_size;
+	char	*new_buf;
+	char	*to_del;
+
+	new_size = data->big_buf_size * 4;
+	new_buf = (char*)malloc(sizeof(char) * new_size);
+	to_del = data->big_buf;
 	ft_strncpy(new_buf, data->big_buf, data->big_buf_size);
 	data->big_buf_size = new_size;
 	data->big_buf = new_buf;
 	free(to_del);
 }
 
-void init_data(t_data **data)
+static int		get_next_line_part_2(t_data *data, t_vars *vars,
+										char **line)
 {
-	*data = (t_data*)malloc(sizeof(t_data));
-	(*data)->big_buf_size = BUFF_SIZE + 1000;
-	(*data)->big_buf = (char*)malloc(sizeof(char) * (*data)->big_buf_size);
-	(*data)->fd_list = NULL;
+	if (vars->pos == 0)
+		return (0);
+	data->big_buf[vars->pos] = 0;
+	vars->rem = ft_strchr(data->big_buf, '\n');
+	if (vars->rem)
+	{
+		vars->rem[0] = 0;
+		if (vars->rem[1])
+			vars->fd_elem->content = (void*)ft_strdup(&vars->rem[1]);
+		else
+			vars->fd_elem->content = NULL;
+	}
+	*line = ft_strdup(data->big_buf);
+	return (1);
 }
 
 int				get_next_line(const int fd, char **line)
 {
 	static t_data	*data;
-	int				ret;
-	int				pos;
-	t_list			*fd_elem;
-	char			*rem;
+	t_vars			vars;
 
 	if (!data)
-		init_data(&data);
-	if (BUFF_SIZE <= 0 || fd < 0 || line == NULL || read(fd, data->big_buf, 0) < 0)
-		return (-1);
-	fd_elem = get_list_elem(data, fd);
-	if (load_remainder(fd_elem, data->big_buf, &pos, line))
-		return (1);
-	while ((ret = read(fd, &data->big_buf[pos], BUFF_SIZE)))
 	{
-		pos += ret;
-		if (str_part_contains(data->big_buf, pos, ret))
-			break;
-		if (pos + BUFF_SIZE > data->big_buf_size - 1)
+		data = (t_data*)malloc(sizeof(t_data));
+		data->big_buf_size = BUFF_SIZE + 1000;
+		data->big_buf = (char*)malloc(sizeof(char) * data->big_buf_size);
+		data->fd_list = NULL;
+	}
+	if (BUFF_SIZE <= 0 || fd < 0 || line == NULL ||
+		read(fd, data->big_buf, 0) < 0)
+		return (-1);
+	vars.fd_elem = get_list_elem(data, fd);
+	if (load_remainder(vars.fd_elem, data->big_buf, &vars.pos, line))
+		return (1);
+	while ((vars.ret = read(fd, &data->big_buf[vars.pos], BUFF_SIZE)))
+	{
+		vars.pos += vars.ret;
+		if (ft_strnchr(data->big_buf, vars.pos, vars.ret))
+			break ;
+		if (vars.pos + BUFF_SIZE > data->big_buf_size - 1)
 			realloc_buf(data);
 	}
-	if (pos == 0)
-		return 0;
-	data->big_buf[pos] = 0;
-	rem = ft_strchr(data->big_buf, '\n');
-	if (rem)
-	{
-		rem[0] = 0;
-		if (rem[1])
-			fd_elem->content = (void*)ft_strdup(&rem[1]);
-		else
-			fd_elem->content = NULL;
-	}
-	*line = ft_strdup(data->big_buf);
-	return 1;
+	return (get_next_line_part_2(data, &vars, line));
 }

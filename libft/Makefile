@@ -38,6 +38,7 @@ STRFUNCS =	ft_strlen \
 			ft_strnstr \
 			ft_strchr \
 			ft_strrchr \
+			ft_strnchr \
 			ft_strclr \
 			ft_strdup \
 			ft_strcpy \

@@ -52,6 +52,6 @@ int		main(int ac, char **av)
 		}
 		close(fd);
 	}
-	//9system("leaks gnl");
+	//system("leaks gnl");
 	return (0);
 }
