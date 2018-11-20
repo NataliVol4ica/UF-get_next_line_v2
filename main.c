@@ -52,6 +52,15 @@ int		main(int ac, char **av)
 		}
 		close(fd);
 	}
+	char str[7];
+	str[0] = 'a';
+	str[1] = 'b';
+	str[2] = 0;
+	str[3] = 'c';
+	str[4] = 0;
+	str[5] = 'd';
+	str[6] = '\n';
+	write (1, str, 7);
 	//system("leaks gnl");
 	return (0);
 }

@@ -10,10 +10,6 @@
 /*                                                                            */
 /* ************************************************************************** */
 
-//todo: '\n' into defined var
-//todo: check big fd
-//todo: check big buf size
-
 #include <stdlib.h>
 #include <unistd.h>
 #include "get_next_line.h"
@@ -38,6 +34,21 @@ static t_list	*get_list_elem(t_data *data, const int fd)
 	return (NULL);
 }
 
+static void		realloc_buf(t_data *data)
+{
+	int		new_size;
+	char	*new_buf;
+	char	*to_del;
+
+	new_size = data->big_buf_size * 4;
+	new_buf = (char*)malloc(sizeof(char) * new_size);
+	to_del = data->big_buf;
+	ft_strncpy(new_buf, data->big_buf, data->big_buf_size);
+	data->big_buf_size = new_size;
+	data->big_buf = new_buf;
+	free(to_del);
+}
+
 static int		load_remainder(t_list *fd_elem,
 						char *big_buf, int *pos, char **line)
 {
@@ -45,7 +56,7 @@ static int		load_remainder(t_list *fd_elem,
 	char *rem;
 
 	remainder = (char*)fd_elem->content;
-	if ((rem = ft_strchr(remainder, '\n')))
+	if ((rem = ft_strchr(remainder, DELIM)))
 	{
 		rem[0] = 0;
 		*line = ft_strdup(remainder);
@@ -66,28 +77,13 @@ static int		load_remainder(t_list *fd_elem,
 	return (0);
 }
 
-static void		realloc_buf(t_data *data)
-{
-	int		new_size;
-	char	*new_buf;
-	char	*to_del;
-
-	new_size = data->big_buf_size * 4;
-	new_buf = (char*)malloc(sizeof(char) * new_size);
-	to_del = data->big_buf;
-	ft_strncpy(new_buf, data->big_buf, data->big_buf_size);
-	data->big_buf_size = new_size;
-	data->big_buf = new_buf;
-	free(to_del);
-}
-
 static int		get_next_line_part_2(t_data *data, t_vars *vars,
 										char **line)
 {
 	if (vars->pos == 0)
 		return (0);
 	data->big_buf[vars->pos] = 0;
-	vars->rem = ft_strchr(data->big_buf, '\n');
+	vars->rem = ft_strchr(data->big_buf, DELIM);
 	if (vars->rem)
 	{
 		vars->rem[0] = 0;
